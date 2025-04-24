@@ -1,6 +1,6 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { RepairRequest, RequestStatus, RequestPriority, WorkOrder, Notification } from "@/types";
+import { RepairRequest, RequestStatus, RequestPriority, WorkOrder, Notification, UserRole } from "@/types";
 import { useAuth } from "./AuthContext";
 import { toast } from "sonner";
 

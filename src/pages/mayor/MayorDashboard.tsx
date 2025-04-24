@@ -21,7 +21,7 @@ import {
   Legend, 
   ResponsiveContainer,
 } from "recharts";
-import { Bar as BarIcon, Download, FileText, CheckCircle, AlertTriangle, Calendar } from "lucide-react";
+import { BarChart2, Download, FileText, CheckCircle, AlertTriangle, Calendar } from "lucide-react";
 import { mayorLinks } from "@/routes/sidebarLinks";
 
 export default function MayorDashboard() {
