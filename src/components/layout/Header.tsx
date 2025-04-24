@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -6,6 +5,7 @@ import { useRepairRequests } from "@/context/RepairRequestContext";
 import { UserRole } from "@/types";
 import { Bell, Home, Map, LogOut, User, Settings, BarChart4 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,7 +22,7 @@ export function Header() {
   const unreadNotifications = userNotifications.filter(n => !n.read);
   
   return (
-    <header className="bg-primary text-white shadow-lg">
+    <header className="bg-primary text-primary-foreground shadow-lg">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <Link to="/" className="flex items-center gap-2">
           <Map className="h-8 w-8" />
@@ -31,13 +31,15 @@ export function Header() {
         </Link>
         
         <div className="hidden md:flex items-center space-x-6">
-          <Link to="/" className="hover:text-secondary-foreground">Home</Link>
-          <Link to="/services" className="hover:text-secondary-foreground">Services</Link>
-          <Link to="/about" className="hover:text-secondary-foreground">About</Link>
-          <Link to="/contact" className="hover:text-secondary-foreground">Contact</Link>
+          <Link to="/" className="hover:text-secondary-foreground transition-colors">Home</Link>
+          <Link to="/services" className="hover:text-secondary-foreground transition-colors">Services</Link>
+          <Link to="/about" className="hover:text-secondary-foreground transition-colors">About</Link>
+          <Link to="/contact" className="hover:text-secondary-foreground transition-colors">Contact</Link>
           
           {isAuthenticated ? (
             <div className="flex items-center space-x-4">
+              <ThemeToggle />
+              
               {/* Notifications */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -143,6 +145,7 @@ export function Header() {
             </div>
           ) : (
             <div className="flex items-center space-x-4">
+              <ThemeToggle />
               <Button asChild variant="secondary">
                 <Link to="/login">Login</Link>
               </Button>
@@ -153,7 +156,6 @@ export function Header() {
           )}
         </div>
         
-        {/* Mobile menu button */}
         <div className="md:hidden">
           <Button variant="ghost" size="sm" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -167,7 +169,6 @@ export function Header() {
         </div>
       </div>
       
-      {/* Mobile menu */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-primary-foreground text-primary">
           <div className="container mx-auto px-4 py-3 flex flex-col space-y-4">
@@ -226,7 +227,6 @@ export function Header() {
                   Profile
                 </Link>
                 
-                {/* Role-specific mobile menu items */}
                 {user?.role === UserRole.RESIDENT && (
                   <Link 
                     to="/requests" 
