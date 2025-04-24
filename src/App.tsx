@@ -17,12 +17,14 @@ import Register from "./pages/auth/Register";
 import RequestList from "./pages/requests/RequestList";
 import NewRequest from "./pages/requests/NewRequest";
 import RequestDetail from "./pages/requests/RequestDetail";
+import RepairHistory from "./pages/requests/RepairHistory";
 import SupervisorDashboard from "./pages/supervisor/SupervisorDashboard";
 import RequestManagement from "./pages/supervisor/RequestManagement";
 import SupervisorRequestDetail from "./pages/supervisor/SupervisorRequestDetail";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ResourceManagement from "./pages/admin/ResourceManagement";
 import MayorDashboard from "./pages/mayor/MayorDashboard";
+import StatisticsPage from "./pages/mayor/StatisticsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -64,6 +66,14 @@ const App = () => (
                   element={
                     <ProtectedRoute>
                       <RequestDetail />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/history"
+                  element={
+                    <ProtectedRoute>
+                      <RepairHistory />
                     </ProtectedRoute>
                   }
                 />
@@ -118,6 +128,14 @@ const App = () => (
                   element={
                     <ProtectedRoute allowedRoles={[UserRole.MAYOR]}>
                       <MayorDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/mayor/statistics"
+                  element={
+                    <ProtectedRoute allowedRoles={[UserRole.MAYOR]}>
+                      <StatisticsPage />
                     </ProtectedRoute>
                   }
                 />
