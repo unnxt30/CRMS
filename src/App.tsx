@@ -9,6 +9,7 @@ import { RepairRequestProvider } from "@/context/RepairRequestContext";
 import { ResourceProvider } from "@/context/ResourceContext";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import { UserRole } from "./types";
+import {Outlet} from "react-router-dom"
 
 // Pages
 import Index from "./pages/Index";
@@ -41,126 +42,7 @@ const App = () => (
             <TooltipProvider>
               <Toaster />
               <Sonner />
-              <BrowserRouter>
-                <Routes>
-                  {/* Public Routes */}
-                  <Route path="/" element={<Index />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/about" element={<AboutPage />} />
-                  <Route path="/services" element={<ServicesPage />} />
-                  <Route path="/contact" element={<ContactPage />} />
-
-                  {/* Resident Routes */}
-                  <Route
-                    path="/requests"
-                    element={
-                      <ProtectedRoute>
-                        <RequestList />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/requests/new"
-                    element={
-                      <ProtectedRoute>
-                        <NewRequest />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/requests/:id"
-                    element={
-                      <ProtectedRoute>
-                        <RequestDetail />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/history"
-                    element={
-                      <ProtectedRoute>
-                        <RepairHistory />
-                      </ProtectedRoute>
-                    }
-                  />
-
-                  {/* Supervisor Routes */}
-                  <Route
-                    path="/supervisor/dashboard"
-                    element={
-                      <ProtectedRoute allowedRoles={[UserRole.SUPERVISOR]}>
-                        <SupervisorDashboard />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/supervisor/requests"
-                    element={
-                      <ProtectedRoute allowedRoles={[UserRole.SUPERVISOR]}>
-                        <RequestManagement />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/supervisor/requests/:id"
-                    element={
-                      <ProtectedRoute allowedRoles={[UserRole.SUPERVISOR]}>
-                        <SupervisorRequestDetail />
-                      </ProtectedRoute>
-                    }
-                  />
-
-                  {/* Administrator Routes */}
-                  <Route
-                    path="/admin/dashboard"
-                    element={
-                      <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
-                        <AdminDashboard />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/resources"
-                    element={
-                      <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
-                        <ResourceManagement />
-                      </ProtectedRoute>
-                    }
-                  />
-
-                  {/* Mayor Routes */}
-                  <Route
-                    path="/mayor/dashboard"
-                    element={
-                      <ProtectedRoute allowedRoles={[UserRole.MAYOR]}>
-                        <MayorDashboard />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/mayor/statistics"
-                    element={
-                      <ProtectedRoute allowedRoles={[UserRole.MAYOR]}>
-                        <StatisticsPage />
-                      </ProtectedRoute>
-                    }
-                  />
-
-                  {/* Protected Routes */}
-                  <Route
-                    path="/profile"
-                    element={
-                      <ProtectedRoute>
-                        <ProfilePage />
-                      </ProtectedRoute>
-                    }
-                  />
-
-                  {/* Catch-all Route */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </BrowserRouter>
+              <Outlet />
             </TooltipProvider>
           </ResourceProvider>
         </RepairRequestProvider>

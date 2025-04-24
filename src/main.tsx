@@ -41,7 +41,6 @@ import WorkOrdersPage from './pages/supervisor/WorkOrdersPage';
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
 import ResourceManagement from './pages/admin/ResourceManagement';
-import TestRunner from './tests/TestRunner';
 
 // Error Page
 import NotFound from './pages/NotFound';
@@ -207,14 +206,6 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
             <ResourceManagement />
-          </ProtectedRoute>
-        ),
-      },
-      { 
-        path: 'admin/tests',
-        element: (
-          <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
-            <TestRunner />
           </ProtectedRoute>
         ),
       },

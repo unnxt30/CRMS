@@ -78,7 +78,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (foundUser) {
         setUser(foundUser);
         localStorage.setItem("cityRoadUser", JSON.stringify(foundUser));
-        toast.success(`Welcome back, ${foundUser.name}!`);
         return true;
       } else {
         toast.error("Invalid email or password");
