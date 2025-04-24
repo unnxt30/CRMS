@@ -7,6 +7,7 @@ interface DashboardLayoutProps {
   children: ReactNode;
   sidebarLinks: any[];
   title?: string;
+  description?: string;
 }
 
 export function DashboardLayout({ children, sidebarLinks, title }: DashboardLayoutProps) {
