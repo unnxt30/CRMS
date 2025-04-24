@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { useRepairRequests } from "@/context/RepairRequestContext";
 import { UserRole } from "@/types";
-import { Bell, Home, Map, LogOut, User, Settings, BarChart4 } from "lucide-react";
+import { Bell, Home, Map, LogOut, User, Settings, BarChart4, TrafficCone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -24,9 +24,9 @@ export function Header() {
     <header className="bg-primary text-primary-foreground shadow-lg">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <Link to="/" className="flex items-center gap-2">
-          <Map className="h-8 w-8" />
-          <span className="font-bold text-xl hidden sm:inline-block">City Road Rescue Hub</span>
-          <span className="font-bold text-xl sm:hidden">CRRH</span>
+          <TrafficCone className="h-8 w-8" />
+          <span className="font-bold text-xl hidden sm:inline-block">City Road Management Service</span>
+          <span className="font-bold text-xl sm:hidden">CRMS</span>
         </Link>
         
         <div className="hidden md:flex items-center space-x-6">
