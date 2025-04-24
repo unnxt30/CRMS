@@ -5,7 +5,6 @@ import { useRepairRequests } from "@/context/RepairRequestContext";
 import { UserRole } from "@/types";
 import { Bell, Home, Map, LogOut, User, Settings, BarChart4 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,7 +37,6 @@ export function Header() {
           
           {isAuthenticated ? (
             <div className="flex items-center space-x-4">
-              <ThemeToggle />
               
               {/* Notifications */}
               <DropdownMenu>
@@ -145,7 +143,6 @@ export function Header() {
             </div>
           ) : (
             <div className="flex items-center space-x-4">
-              <ThemeToggle />
               <Button asChild variant="secondary">
                 <Link to="/login">Login</Link>
               </Button>

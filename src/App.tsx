@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/context/AuthContext";
 import { RepairRequestProvider } from "@/context/RepairRequestContext";
 import { ResourceProvider } from "@/context/ResourceContext";
-import { ThemeProvider } from "@/providers/theme-provider";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import { UserRole } from "./types";
 
@@ -35,7 +34,6 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="system" storageKey="city-road-theme">
       <AuthProvider>
         <RepairRequestProvider>
           <ResourceProvider>
@@ -166,7 +164,6 @@ const App = () => (
           </ResourceProvider>
         </RepairRequestProvider>
       </AuthProvider>
-    </ThemeProvider>
   </QueryClientProvider>
 );
 
