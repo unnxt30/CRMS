@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { supervisorLinks } from "@/routes/sidebarLinks";
@@ -11,37 +10,25 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useRepairRequests } from "@/context/RepairRequestContext";
 import { Badge } from "@/components/ui/badge";
-import { format, addHours } from "date-fns";
+import { format, addHours, startOfDay } from "date-fns";
 import { toast } from "sonner";
 import { Calendar as CalendarIcon, Plus, Clock } from "lucide-react";
 import { RequestStatus } from "@/types";
 
-export default function SchedulePage() {
-  const { requests, workOrders, updateRequest } = useRepairRequests();
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [scheduledTasks, setScheduledTasks] = useState<any[]>([
-    {
-      id: "task1",
-      title: "Inspect Pothole on Main Street",
-      requestId: "req1",
-      start: "09:00",
-      end: "11:00",
-      assignees: ["John Doe", "Mike Smith"],
-      type: "Inspection"
-    },
-    {
-      id: "task2",
-      title: "Fix Street Light on Park Road",
-      requestId: "req2",
-      start: "13:00",
-      end: "16:00",
-      assignees: ["Lisa Johnson", "Robert Brown"],
-      type: "Repair"
-    }
-  ]);
+interface NewTask {
+  title: string;
+  requestId: string;
+  start: string;
+  end: string;
+  assignees: string;
+  type: 'Inspection' | 'Repair' | 'Maintenance';
+}
 
-  const [newTask, setNewTask] = useState({
+export default function SchedulePage() {
+  const { requests, updateRequest, scheduledTasks, addScheduledTask, getTasksByDate } = useRepairRequests();
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [newTask, setNewTask] = useState<NewTask>({
     title: "",
     requestId: "",
     start: "09:00",
@@ -54,20 +41,36 @@ export default function SchedulePage() {
     req.status !== RequestStatus.COMPLETED && req.status !== RequestStatus.REJECTED
   );
 
+  const tasksForSelectedDate = getTasksByDate(selectedDate);
+
   const handleAddTask = () => {
+    if (!selectedDate) {
+      toast.error("Please select a date");
+      return;
+    }
+
+    if (!newTask.title || !newTask.start || !newTask.end || !newTask.assignees) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
     const task = {
-      id: `task${scheduledTasks.length + 1}`,
-      ...newTask,
-      assignees: newTask.assignees.split(",").map(a => a.trim())
+      title: newTask.title,
+      requestId: newTask.requestId || undefined,
+      start: newTask.start,
+      end: newTask.end,
+      assignees: newTask.assignees.split(",").map(a => a.trim()),
+      type: newTask.type,
+      date: startOfDay(selectedDate).toISOString()
     };
     
-    setScheduledTasks([...scheduledTasks, task]);
+    addScheduledTask(task);
     
     // If the task is linked to a request, update the request status
     if (newTask.requestId) {
       updateRequest(newTask.requestId, {
         status: RequestStatus.SCHEDULED,
-        estimatedCompletionDate: selectedDate ? addHours(selectedDate, 8).toISOString() : undefined
+        estimatedCompletionDate: addHours(selectedDate, 8).toISOString()
       });
     }
     
@@ -84,6 +87,21 @@ export default function SchedulePage() {
     toast.success("Task scheduled successfully");
   };
 
+  const validateTimeRange = (start: string, end: string) => {
+    const [startHour] = start.split(":").map(Number);
+    const [endHour] = end.split(":").map(Number);
+    return startHour < endHour;
+  };
+
+  const handleTimeChange = (field: 'start' | 'end', value: string) => {
+    const updatedTask = { ...newTask, [field]: value };
+    if (!validateTimeRange(updatedTask.start, updatedTask.end)) {
+      toast.error("End time must be after start time");
+      return;
+    }
+    setNewTask(updatedTask);
+  };
+
   const formattedDate = selectedDate 
     ? format(selectedDate, "EEEE, MMMM d, yyyy")
     : "Select a date";
@@ -94,7 +112,7 @@ export default function SchedulePage() {
         <h1 className="text-2xl font-bold">Maintenance Schedule</h1>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button>
+            <Button >
               <Plus className="mr-2 h-4 w-4" /> Schedule New Task
             </Button>
           </DialogTrigger>
@@ -104,12 +122,13 @@ export default function SchedulePage() {
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <label htmlFor="title">Task Title</label>
+                <label htmlFor="title">Task Title *</label>
                 <Input
                   id="title"
                   value={newTask.title}
                   onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
                   placeholder="Enter task title"
+                  required
                 />
               </div>
               <div className="grid gap-2">
@@ -119,7 +138,6 @@ export default function SchedulePage() {
                     <SelectValue placeholder="Select a request" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">None</SelectItem>
                     {pendingRequests.map((req) => (
                       <SelectItem key={req.id} value={req.id}>{req.title}</SelectItem>
                     ))}
@@ -128,21 +146,23 @@ export default function SchedulePage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <label htmlFor="start">Start Time</label>
+                  <label htmlFor="start">Start Time *</label>
                   <Input
                     id="start"
                     type="time"
                     value={newTask.start}
-                    onChange={(e) => setNewTask({ ...newTask, start: e.target.value })}
+                    onChange={(e) => handleTimeChange('start', e.target.value)}
+                    required
                   />
                 </div>
                 <div className="grid gap-2">
-                  <label htmlFor="end">End Time</label>
+                  <label htmlFor="end">End Time *</label>
                   <Input
                     id="end"
                     type="time"
                     value={newTask.end}
-                    onChange={(e) => setNewTask({ ...newTask, end: e.target.value })}
+                    onChange={(e) => handleTimeChange('end', e.target.value)}
+                    required
                   />
                 </div>
               </div>
@@ -199,9 +219,9 @@ export default function SchedulePage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {scheduledTasks.length > 0 ? (
+            {tasksForSelectedDate.length > 0 ? (
               <div className="space-y-4">
-                {scheduledTasks.map((task) => (
+                {tasksForSelectedDate.map((task) => (
                   <div key={task.id} className="bg-muted/30 p-4 rounded-lg border">
                     <div className="flex items-start justify-between">
                       <div>

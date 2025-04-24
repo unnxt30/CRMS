@@ -1,8 +1,8 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { RepairRequest, RequestStatus, RequestPriority, WorkOrder, Notification, UserRole } from "@/types";
 import { useAuth } from "./AuthContext";
 import { toast } from "sonner";
+import { startOfDay } from "date-fns";
 
 // Mock data for demo
 const mockRepairRequests: RepairRequest[] = [
@@ -155,6 +155,17 @@ const mockNotifications: Notification[] = [
   }
 ];
 
+interface ScheduledTask {
+  id: string;
+  title: string;
+  requestId?: string;
+  start: string;
+  end: string;
+  assignees: string[];
+  type: 'Inspection' | 'Repair' | 'Maintenance';
+  date: string; // ISO string
+}
+
 interface RepairRequestContextType {
   requests: RepairRequest[];
   workOrders: WorkOrder[];
@@ -168,6 +179,9 @@ interface RepairRequestContextType {
   getWorkOrdersByRequestId: (requestId: string) => WorkOrder[];
   markNotificationAsRead: (id: string) => void;
   clearAllNotifications: () => void;
+  scheduledTasks: ScheduledTask[];
+  addScheduledTask: (task: Omit<ScheduledTask, 'id'>) => void;
+  getTasksByDate: (date: Date) => ScheduledTask[];
 }
 
 const RepairRequestContext = createContext<RepairRequestContextType | undefined>(undefined);
@@ -178,6 +192,10 @@ export function RepairRequestProvider({ children }: { children: ReactNode }) {
   const [workOrders, setWorkOrders] = useState<WorkOrder[]>(mockWorkOrders);
   const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);
   const [isLoading, setIsLoading] = useState(true);
+  const [scheduledTasks, setScheduledTasks] = useState<ScheduledTask[]>(() => {
+    const saved = localStorage.getItem('scheduledTasks');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   useEffect(() => {
     // Simulate loading data
@@ -196,6 +214,11 @@ export function RepairRequestProvider({ children }: { children: ReactNode }) {
   const userNotifications = notifications.filter(notif => 
     !notif.userId || notif.userId === user?.id
   );
+
+  // Save tasks to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('scheduledTasks', JSON.stringify(scheduledTasks));
+  }, [scheduledTasks]);
 
   const createRequest = async (request: Partial<RepairRequest>): Promise<string | null> => {
     if (!user) return null;
@@ -305,6 +328,20 @@ export function RepairRequestProvider({ children }: { children: ReactNode }) {
     ));
   };
 
+  const addScheduledTask = (task: Omit<ScheduledTask, 'id'>) => {
+    const newTask = {
+      ...task,
+      id: crypto.randomUUID()
+    };
+    setScheduledTasks(prev => [...prev, newTask]);
+    localStorage.setItem('scheduledTasks', JSON.stringify([...scheduledTasks, newTask]));
+  };
+
+  const getTasksByDate = (date: Date) => {
+    const dateString = startOfDay(date).toISOString();
+    return scheduledTasks.filter(task => task.date === dateString);
+  };
+
   return (
     <RepairRequestContext.Provider value={{
       requests,
@@ -318,7 +355,10 @@ export function RepairRequestProvider({ children }: { children: ReactNode }) {
       getRequestById,
       getWorkOrdersByRequestId,
       markNotificationAsRead,
-      clearAllNotifications
+      clearAllNotifications,
+      scheduledTasks,
+      addScheduledTask,
+      getTasksByDate,
     }}>
       {children}
     </RepairRequestContext.Provider>
