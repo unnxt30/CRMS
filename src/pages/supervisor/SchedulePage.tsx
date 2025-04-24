@@ -119,7 +119,6 @@ export default function SchedulePage() {
                     <SelectValue placeholder="Select a request" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">None</SelectItem>
                     {pendingRequests.map((req) => (
                       <SelectItem key={req.id} value={req.id}>{req.title}</SelectItem>
                     ))}
