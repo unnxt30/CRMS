@@ -1,18 +1,17 @@
-
 export enum UserRole {
-  RESIDENT = "resident",
-  SUPERVISOR = "supervisor",
-  ADMINISTRATOR = "administrator",
-  MAYOR = "mayor"
+  RESIDENT = "RESIDENT",
+  SUPERVISOR = "SUPERVISOR",
+  MAYOR = "MAYOR",
+  ADMIN = "ADMIN"
 }
 
 export enum RequestStatus {
-  PENDING = "pending",
-  INSPECTED = "inspected",
-  SCHEDULED = "scheduled",
-  IN_PROGRESS = "in_progress",
-  COMPLETED = "completed",
-  REJECTED = "rejected"
+  PENDING = "PENDING",
+  INSPECTED = "INSPECTED",
+  SCHEDULED = "SCHEDULED",
+  IN_PROGRESS = "IN_PROGRESS",
+  COMPLETED = "COMPLETED",
+  REJECTED = "REJECTED"
 }
 
 export enum RequestPriority {

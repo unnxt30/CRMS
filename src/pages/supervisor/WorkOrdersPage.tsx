@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
@@ -34,6 +33,7 @@ import { useResources } from "@/context/ResourceContext";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { Search, Plus, FileText, Clock, Calendar } from "lucide-react";
+import { RequestStatus } from "@/types";
 
 export default function WorkOrdersPage() {
   const navigate = useNavigate();
@@ -52,7 +52,7 @@ export default function WorkOrdersPage() {
   });
   
   const pendingRequests = requests.filter(req => 
-    req.status !== "COMPLETED" && req.status !== "REJECTED"
+    req.status !== RequestStatus.COMPLETED && req.status !== RequestStatus.REJECTED
   );
   
   const filteredWorkOrders = workOrders.filter(order => 

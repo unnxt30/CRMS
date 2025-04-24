@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useRepairRequests } from "@/context/RepairRequestContext";
@@ -34,7 +33,6 @@ export default function SupervisorRequestDetail() {
   const [estimatedCompletionDate, setEstimatedCompletionDate] = useState("");
   const [saving, setSaving] = useState(false);
   
-  // Get work orders related to this request
   const relatedWorkOrders = id ? getWorkOrdersByRequestId(id) : [];
   
   useEffect(() => {
@@ -79,8 +77,8 @@ export default function SupervisorRequestDetail() {
     );
   }
   
-  const handleStatusChange = (newStatus: RequestStatus) => {
-    setStatus(newStatus);
+  const handleStatusChange = (status: RequestStatus) => {
+    setStatus(status);
   };
   
   const handlePriorityChange = (newPriority: RequestPriority) => {
@@ -108,13 +106,11 @@ export default function SupervisorRequestDetail() {
       }
       
       if (estimatedCompletionDate) {
-        // Convert the date string to an ISO string for storage
         const date = new Date(estimatedCompletionDate);
-        date.setHours(17, 0, 0, 0); // Set to 5:00 PM
+        date.setHours(17, 0, 0, 0);
         updates.estimatedCompletionDate = date.toISOString();
       }
       
-      // Only update if there are changes
       if (Object.keys(updates).length > 0) {
         await updateRequest(id, updates);
         toast.success("Request updated successfully");
@@ -217,7 +213,6 @@ export default function SupervisorRequestDetail() {
             </Card>
           )}
 
-          {/* Related Work Orders */}
           {relatedWorkOrders.length > 0 && (
             <Card className="mt-6">
               <CardHeader>

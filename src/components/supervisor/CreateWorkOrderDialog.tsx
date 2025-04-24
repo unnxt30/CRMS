@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useRepairRequests } from "@/context/RepairRequestContext";
 import { useResources } from "@/context/ResourceContext";
@@ -57,12 +56,9 @@ export function CreateWorkOrderDialog({ requestId, requestTitle }: CreateWorkOrd
   };
 
   const handleCreateWorkOrder = () => {
-    // In a real app, this would create a work order in the database
-    console.log("Creating work order with resources:", selectedResources);
-    
     // Update the request status
     updateRequest(requestId, {
-      status: "IN_PROGRESS",
+      status: RequestStatus.IN_PROGRESS,
       estimatedCompletionDate: addDays(new Date(formData.startDate), parseInt(formData.estimatedDuration)).toISOString()
     });
     
