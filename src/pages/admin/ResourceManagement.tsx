@@ -265,7 +265,6 @@ export default function ResourceManagement() {
                 <SelectValue placeholder="Filter by type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Types</SelectItem>
                 <SelectItem value="material">Material</SelectItem>
                 <SelectItem value="manpower">Manpower</SelectItem>
                 <SelectItem value="equipment">Equipment</SelectItem>

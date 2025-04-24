@@ -70,7 +70,6 @@ export default function RequestManagement() {
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Statuses</SelectItem>
                   <SelectItem value={RequestStatus.PENDING}>Pending</SelectItem>
                   <SelectItem value={RequestStatus.INSPECTED}>Inspected</SelectItem>
                   <SelectItem value={RequestStatus.SCHEDULED}>Scheduled</SelectItem>
@@ -86,7 +85,6 @@ export default function RequestManagement() {
                   <SelectValue placeholder="Priority" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Priorities</SelectItem>
                   <SelectItem value={RequestPriority.LOW}>Low</SelectItem>
                   <SelectItem value={RequestPriority.MEDIUM}>Medium</SelectItem>
                   <SelectItem value={RequestPriority.HIGH}>High</SelectItem>

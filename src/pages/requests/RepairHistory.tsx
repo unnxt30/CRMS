@@ -47,7 +47,6 @@ export default function RepairHistory() {
                   <SelectValue placeholder="All statuses" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Statuses</SelectItem>
                   <SelectItem value="pending">Pending</SelectItem>
                   <SelectItem value="inspected">Inspected</SelectItem>
                   <SelectItem value="scheduled">Scheduled</SelectItem>

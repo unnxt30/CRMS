@@ -74,7 +74,6 @@ export default function RequestList() {
                   <SelectValue placeholder="Filter by status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Statuses</SelectItem>
                   <SelectItem value={RequestStatus.PENDING}>Pending</SelectItem>
                   <SelectItem value={RequestStatus.INSPECTED}>Inspected</SelectItem>
                   <SelectItem value={RequestStatus.SCHEDULED}>Scheduled</SelectItem>
