@@ -20,11 +20,12 @@ import { MapPin, Calendar, Clock, ArrowLeft, Save } from "lucide-react";
 import { toast } from "sonner";
 
 import { supervisorLinks } from "@/routes/sidebarLinks";
+import { CreateWorkOrderDialog } from "@/components/supervisor/CreateWorkOrderDialog";
 
 export default function SupervisorRequestDetail() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const { getRequestById, updateRequest, isLoading } = useRepairRequests();
+  const { getRequestById, updateRequest, isLoading, workOrders, getWorkOrdersByRequestId } = useRepairRequests();
   
   const [request, setRequest] = useState(id ? getRequestById(id) : null);
   const [status, setStatus] = useState<RequestStatus | "">("");
@@ -32,6 +33,9 @@ export default function SupervisorRequestDetail() {
   const [inspectionNotes, setInspectionNotes] = useState("");
   const [estimatedCompletionDate, setEstimatedCompletionDate] = useState("");
   const [saving, setSaving] = useState(false);
+  
+  // Get work orders related to this request
+  const relatedWorkOrders = id ? getWorkOrdersByRequestId(id) : [];
   
   useEffect(() => {
     if (id) {
@@ -212,6 +216,46 @@ export default function SupervisorRequestDetail() {
               </CardContent>
             </Card>
           )}
+
+          {/* Related Work Orders */}
+          {relatedWorkOrders.length > 0 && (
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle>Related Work Orders</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {relatedWorkOrders.map((workOrder) => (
+                    <div key={workOrder.id} className="p-4 border rounded-lg">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="font-medium">{workOrder.title}</h3>
+                          <p className="text-sm text-muted-foreground mt-1">{workOrder.description}</p>
+                        </div>
+                        <StatusBadge status={workOrder.status} />
+                      </div>
+                      <div className="mt-3 text-sm">
+                        <div className="flex items-center text-muted-foreground">
+                          <Calendar className="h-4 w-4 mr-1" />
+                          <span>{format(new Date(workOrder.startDate), "MMM d, yyyy")}</span>
+                          {workOrder.endDate && (
+                            <span> - {format(new Date(workOrder.endDate), "MMM d, yyyy")}</span>
+                          )}
+                        </div>
+                        
+                        {workOrder.assignedTo && workOrder.assignedTo.length > 0 && (
+                          <div className="mt-2">
+                            <span className="text-muted-foreground">Assigned to: </span>
+                            <span>{Array.isArray(workOrder.assignedTo) ? workOrder.assignedTo.join(", ") : workOrder.assignedTo}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
         
         <div>
@@ -284,9 +328,31 @@ export default function SupervisorRequestDetail() {
               <CardTitle>Resource Planning</CardTitle>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" className="w-full">
-                Create Work Order
-              </Button>
+              {request.status === RequestStatus.COMPLETED ? (
+                <div className="text-center py-2">
+                  <p className="text-green-600 mb-2">This request has been completed</p>
+                  {relatedWorkOrders.length > 0 && (
+                    <p className="text-sm text-muted-foreground">
+                      {relatedWorkOrders.length} work order(s) completed
+                    </p>
+                  )}
+                </div>
+              ) : request.status === RequestStatus.REJECTED ? (
+                <div className="text-center py-2">
+                  <p className="text-red-500">This request has been rejected</p>
+                </div>
+              ) : relatedWorkOrders.length > 0 ? (
+                <div className="space-y-3">
+                  <p className="text-sm text-muted-foreground mb-2">
+                    This request has {relatedWorkOrders.length} active work order(s)
+                  </p>
+                  <Button variant="outline" className="w-full" onClick={() => navigate("/supervisor/workorders")}>
+                    View Work Orders
+                  </Button>
+                </div>
+              ) : (
+                <CreateWorkOrderDialog requestId={request.id} requestTitle={request.title} />
+              )}
             </CardContent>
           </Card>
         </div>
