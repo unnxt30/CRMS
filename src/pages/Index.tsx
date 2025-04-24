@@ -36,7 +36,7 @@ export default function Index() {
                   </Link>
                 </Button>
               )}
-              <Button asChild variant="outline" size="lg" className="font-semibold">
+              <Button asChild variant="default" size="lg" className="font-semibold">
                 <Link to="/about">Learn More</Link>
               </Button>
             </div>
@@ -46,7 +46,7 @@ export default function Index() {
               <div className="absolute -top-6 -left-6 w-20 h-20 bg-accent/30 rounded-full blur-xl"></div>
               <div className="absolute -bottom-8 -right-8 w-28 h-28 bg-secondary/40 rounded-full blur-xl"></div>
               <img 
-                src="https://images.unsplash.com/photo-1506739407668-a3740611b9f3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" 
+                src="https://images.unsplash.com/photo-1592639296346-560c37a0f711?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fENpdHklMjByb2FkcyUyMGluZGlhfGVufDB8fDB8fHww" 
                 alt="City Road" 
                 className="rounded-2xl shadow-2xl relative z-10 w-full"
               />
