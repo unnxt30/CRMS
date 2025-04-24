@@ -1,8 +1,8 @@
-# City Road Rescue Hub
+# City Road Management Service
 
 ## About the Project
 
-This project is part of the CSD-326 Software Engineering course offered at Shiv Nadar University, Greater Noida, India. The City Road Rescue Hub is a comprehensive web application designed to streamline the process of reporting and managing road repair requests in urban areas.
+This project is part of the CSD-326 Software Engineering course offered at Shiv Nadar University, Greater Noida, India. The City Road Management Service is a comprehensive web application designed to streamline the process of reporting and managing road repair requests in urban areas.
 
 ## Live Demo
 
