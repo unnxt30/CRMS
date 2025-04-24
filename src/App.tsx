@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -114,7 +115,7 @@ const App = () => (
                   <Route
                     path="/admin/dashboard"
                     element={
-                      <ProtectedRoute allowedRoles={[UserRole.ADMINISTRATOR]}>
+                      <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
                         <AdminDashboard />
                       </ProtectedRoute>
                     }
@@ -122,7 +123,7 @@ const App = () => (
                   <Route
                     path="/admin/resources"
                     element={
-                      <ProtectedRoute allowedRoles={[UserRole.ADMINISTRATOR]}>
+                      <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
                         <ResourceManagement />
                       </ProtectedRoute>
                     }

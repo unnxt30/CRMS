@@ -48,6 +48,7 @@ import NotFound from './pages/NotFound';
 
 import './index.css';
 import ProtectedRoute from './routes/ProtectedRoute';
+import { UserRole } from './types';
 
 const router = createBrowserRouter([
   {
@@ -120,7 +121,7 @@ const router = createBrowserRouter([
       { 
         path: 'mayor/dashboard',
         element: (
-          <ProtectedRoute role="MAYOR">
+          <ProtectedRoute allowedRoles={[UserRole.MAYOR]}>
             <MayorDashboard />
           </ProtectedRoute>
         ),
@@ -128,7 +129,7 @@ const router = createBrowserRouter([
       { 
         path: 'mayor/statistics',
         element: (
-          <ProtectedRoute role="MAYOR">
+          <ProtectedRoute allowedRoles={[UserRole.MAYOR]}>
             <StatisticsPage />
           </ProtectedRoute>
         ),
@@ -136,7 +137,7 @@ const router = createBrowserRouter([
       { 
         path: 'mayor/areas',
         element: (
-          <ProtectedRoute role="MAYOR">
+          <ProtectedRoute allowedRoles={[UserRole.MAYOR]}>
             <AreasReportPage />
           </ProtectedRoute>
         ),
@@ -144,7 +145,7 @@ const router = createBrowserRouter([
       { 
         path: 'mayor/reports',
         element: (
-          <ProtectedRoute role="MAYOR">
+          <ProtectedRoute allowedRoles={[UserRole.MAYOR]}>
             <GenerateReportsPage />
           </ProtectedRoute>
         ),
@@ -154,7 +155,7 @@ const router = createBrowserRouter([
       { 
         path: 'supervisor/dashboard',
         element: (
-          <ProtectedRoute role="SUPERVISOR">
+          <ProtectedRoute allowedRoles={[UserRole.SUPERVISOR]}>
             <SupervisorDashboard />
           </ProtectedRoute>
         ),
@@ -162,7 +163,7 @@ const router = createBrowserRouter([
       { 
         path: 'supervisor/requests',
         element: (
-          <ProtectedRoute role="SUPERVISOR">
+          <ProtectedRoute allowedRoles={[UserRole.SUPERVISOR]}>
             <RequestManagement />
           </ProtectedRoute>
         ),
@@ -170,7 +171,7 @@ const router = createBrowserRouter([
       { 
         path: 'supervisor/requests/:id',
         element: (
-          <ProtectedRoute role="SUPERVISOR">
+          <ProtectedRoute allowedRoles={[UserRole.SUPERVISOR]}>
             <SupervisorRequestDetail />
           </ProtectedRoute>
         ),
@@ -178,7 +179,7 @@ const router = createBrowserRouter([
       { 
         path: 'supervisor/schedule',
         element: (
-          <ProtectedRoute role="SUPERVISOR">
+          <ProtectedRoute allowedRoles={[UserRole.SUPERVISOR]}>
             <SchedulePage />
           </ProtectedRoute>
         ),
@@ -186,7 +187,7 @@ const router = createBrowserRouter([
       { 
         path: 'supervisor/workorders',
         element: (
-          <ProtectedRoute role="SUPERVISOR">
+          <ProtectedRoute allowedRoles={[UserRole.SUPERVISOR]}>
             <WorkOrdersPage />
           </ProtectedRoute>
         ),
@@ -196,7 +197,7 @@ const router = createBrowserRouter([
       { 
         path: 'admin/dashboard',
         element: (
-          <ProtectedRoute role="ADMIN">
+          <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
             <AdminDashboard />
           </ProtectedRoute>
         ),
@@ -204,7 +205,7 @@ const router = createBrowserRouter([
       { 
         path: 'admin/resources',
         element: (
-          <ProtectedRoute role="ADMIN">
+          <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
             <ResourceManagement />
           </ProtectedRoute>
         ),
@@ -212,7 +213,7 @@ const router = createBrowserRouter([
       { 
         path: 'admin/tests',
         element: (
-          <ProtectedRoute role="ADMIN">
+          <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
             <TestRunner />
           </ProtectedRoute>
         ),

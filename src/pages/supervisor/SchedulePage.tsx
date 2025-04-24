@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { format, addHours } from "date-fns";
 import { toast } from "sonner";
 import { Calendar as CalendarIcon, Plus, Clock } from "lucide-react";
+import { RequestStatus } from "@/types";
 
 export default function SchedulePage() {
   const { requests, workOrders, updateRequest } = useRepairRequests();
@@ -50,7 +51,7 @@ export default function SchedulePage() {
   });
 
   const pendingRequests = requests.filter(req => 
-    req.status !== "completed" && req.status !== "rejected"
+    req.status !== RequestStatus.COMPLETED && req.status !== RequestStatus.REJECTED
   );
 
   const handleAddTask = () => {
@@ -65,7 +66,7 @@ export default function SchedulePage() {
     // If the task is linked to a request, update the request status
     if (newTask.requestId) {
       updateRequest(newTask.requestId, {
-        status: "SCHEDULED",
+        status: RequestStatus.SCHEDULED,
         estimatedCompletionDate: selectedDate ? addHours(selectedDate, 8).toISOString() : undefined
       });
     }

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -115,7 +116,7 @@ export function Header() {
                     </DropdownMenuItem>
                   )}
                   
-                  {user?.role === UserRole.ADMINISTRATOR && (
+                  {user?.role === UserRole.ADMIN && (
                     <DropdownMenuItem asChild>
                       <Link to="/admin/dashboard" className="cursor-pointer">
                         <Settings className="mr-2 h-4 w-4" />
@@ -246,7 +247,7 @@ export function Header() {
                   </Link>
                 )}
                 
-                {user?.role === UserRole.ADMINISTRATOR && (
+                {user?.role === UserRole.ADMIN && (
                   <Link 
                     to="/admin/dashboard" 
                     className="px-3 py-2 rounded-md hover:bg-secondary flex items-center"

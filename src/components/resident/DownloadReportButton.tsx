@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { RepairRequest } from "@/types";
+import { RepairRequest, RequestStatus } from "@/types";
 
 interface DownloadReportButtonProps {
   request: RepairRequest;
@@ -64,8 +64,8 @@ export function DownloadReportButton({ request }: DownloadReportButtonProps) {
   return (
     <Button 
       onClick={handleDownload} 
-      disabled={isGenerating || request.status !== 'completed'}
-      variant={request.status !== 'completed' ? "outline" : "default"}
+      disabled={isGenerating || request.status !== RequestStatus.COMPLETED}
+      variant={request.status !== RequestStatus.COMPLETED ? "outline" : "default"}
     >
       <Download className="mr-2 h-4 w-4" />
       {isGenerating ? "Generating..." : "Download Report"}

@@ -1,3 +1,4 @@
+
 export enum UserRole {
   RESIDENT = "RESIDENT",
   SUPERVISOR = "SUPERVISOR",

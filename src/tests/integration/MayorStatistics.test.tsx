@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
 import StatisticsPage from '@/pages/mayor/StatisticsPage';
 import { RepairRequestProvider } from '@/context/RepairRequestContext';

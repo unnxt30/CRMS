@@ -1,25 +1,16 @@
-import { useState, useEffect } from "react";
-import { useRepairRequests } from "@/context/RepairRequestContext";
-import { useResources } from "@/context/ResourceContext";
+
+import React, { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { format, addDays } from "date-fns";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useResources } from "@/context/ResourceContext";
+import { useRepairRequests } from "@/context/RepairRequestContext";
+import { Resource, RequestStatus } from "@/types";
+import { format } from "date-fns";
 import { toast } from "sonner";
+import { Plus, Wrench } from "lucide-react";
 
 interface CreateWorkOrderDialogProps {
   requestId: string;
@@ -29,158 +20,159 @@ interface CreateWorkOrderDialogProps {
 export function CreateWorkOrderDialog({ requestId, requestTitle }: CreateWorkOrderDialogProps) {
   const { resources } = useResources();
   const { updateRequest } = useRepairRequests();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedResources, setSelectedResources] = useState<{id: string, quantity: number}[]>([]);
-  const [formData, setFormData] = useState({
-    title: `Work order for: ${requestTitle}`,
-    description: "",
-    assignedWorkers: "",
-    startDate: format(new Date(), "yyyy-MM-dd"),
-    estimatedDuration: "1"
-  });
+  const [title, setTitle] = useState(`Work Order - ${requestTitle}`);
+  const [description, setDescription] = useState("");
+  const [workers, setWorkers] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSelectResource = (resourceId: string) => {
-    const exists = selectedResources.find(r => r.id === resourceId);
-    
-    if (exists) {
-      setSelectedResources(selectedResources.filter(r => r.id !== resourceId));
+  const handleResourceSelection = (resource: Resource, isChecked: boolean) => {
+    if (isChecked) {
+      setSelectedResources(prev => [...prev, { id: resource.id, quantity: 1 }]);
     } else {
-      setSelectedResources([...selectedResources, { id: resourceId, quantity: 1 }]);
+      setSelectedResources(prev => prev.filter(r => r.id !== resource.id));
     }
   };
 
   const handleQuantityChange = (resourceId: string, quantity: number) => {
-    setSelectedResources(selectedResources.map(r => 
-      r.id === resourceId ? { ...r, quantity } : r
-    ));
+    setSelectedResources(prev => 
+      prev.map(r => r.id === resourceId ? { ...r, quantity } : r)
+    );
   };
 
-  const handleCreateWorkOrder = () => {
-    // Update the request status
-    updateRequest(requestId, {
-      status: RequestStatus.IN_PROGRESS,
-      estimatedCompletionDate: addDays(new Date(formData.startDate), parseInt(formData.estimatedDuration)).toISOString()
-    });
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
     
-    toast.success("Work order created successfully");
-    setIsOpen(false);
-    
-    // Reset form
-    setSelectedResources([]);
-    setFormData({
-      title: `Work order for: ${requestTitle}`,
-      description: "",
-      assignedWorkers: "",
-      startDate: format(new Date(), "yyyy-MM-dd"),
-      estimatedDuration: "1"
-    });
+    try {
+      // In a real implementation, this would call an API
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Update request status
+      await updateRequest(requestId, {
+        status: RequestStatus.IN_PROGRESS,
+        estimatedCompletionDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 1 week from now
+      });
+      
+      // Reset form
+      setTitle(`Work Order - ${requestTitle}`);
+      setDescription("");
+      setWorkers("");
+      setSelectedResources([]);
+      
+      toast.success("Work order created successfully");
+      setIsDialogOpen(false);
+    } catch (error) {
+      console.error("Error creating work order:", error);
+      toast.error("Failed to create work order");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
-  
+
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
-        <Button className="w-full">Create Work Order</Button>
+        <Button className="w-full">
+          <Plus className="mr-2 h-4 w-4" /> Create Work Order
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Create Work Order</DialogTitle>
+          <DialogTitle className="flex items-center">
+            <Wrench className="h-5 w-5 mr-2" /> Create Work Order
+          </DialogTitle>
         </DialogHeader>
         
         <div className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <label htmlFor="title">Work Order Title</label>
+          <div>
+            <label htmlFor="title" className="text-sm font-medium mb-1 block">Work Order Title</label>
             <Input
               id="title"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Enter work order title"
             />
           </div>
           
-          <div className="grid gap-2">
-            <label htmlFor="description">Description</label>
+          <div>
+            <label htmlFor="description" className="text-sm font-medium mb-1 block">Description</label>
             <Textarea
               id="description"
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Detailed description of work to be performed"
-              className="h-24"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Describe the work to be done"
+              className="min-h-[100px]"
             />
           </div>
           
-          <div className="grid grid-cols-2 gap-4">
-            <div className="grid gap-2">
-              <label htmlFor="startDate">Start Date</label>
-              <Input
-                id="startDate"
-                type="date"
-                value={formData.startDate}
-                onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-              />
-            </div>
-            
-            <div className="grid gap-2">
-              <label htmlFor="duration">Estimated Duration (days)</label>
-              <Input
-                id="duration"
-                type="number"
-                min="1"
-                value={formData.estimatedDuration}
-                onChange={(e) => setFormData({ ...formData, estimatedDuration: e.target.value })}
-              />
-            </div>
-          </div>
-          
-          <div className="grid gap-2">
-            <label htmlFor="workers">Assigned Workers (comma separated)</label>
+          <div>
+            <label htmlFor="workers" className="text-sm font-medium mb-1 block">Assigned Workers (comma separated)</label>
             <Input
               id="workers"
-              value={formData.assignedWorkers}
-              onChange={(e) => setFormData({ ...formData, assignedWorkers: e.target.value })}
+              value={workers}
+              onChange={(e) => setWorkers(e.target.value)}
               placeholder="e.g. John Doe, Jane Smith"
             />
           </div>
           
-          <div className="grid gap-2">
-            <label>Required Resources</label>
-            <div className="border rounded-md p-3 max-h-48 overflow-y-auto space-y-2">
-              {resources.map((resource) => (
-                <div key={resource.id} className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      id={`resource-${resource.id}`}
-                      checked={selectedResources.some(r => r.id === resource.id)}
-                      onChange={() => handleSelectResource(resource.id)}
-                      className="mr-2"
-                    />
-                    <label htmlFor={`resource-${resource.id}`} className="text-sm font-medium">
-                      {resource.name} ({resource.available}/{resource.quantity} {resource.unit} available)
-                    </label>
-                  </div>
+          <div>
+            <label className="text-sm font-medium mb-2 block">Required Resources</label>
+            <div className="space-y-3 max-h-[200px] overflow-y-auto p-2 border rounded-md">
+              {resources.length > 0 ? (
+                resources.map((resource) => {
+                  const isSelected = selectedResources.some(r => r.id === resource.id);
+                  const selectedResource = selectedResources.find(r => r.id === resource.id);
                   
-                  {selectedResources.some(r => r.id === resource.id) && (
-                    <div className="flex items-center space-x-1">
-                      <Input
-                        type="number"
-                        min="1"
-                        max={resource.available}
-                        value={selectedResources.find(r => r.id === resource.id)?.quantity || 1}
-                        onChange={(e) => handleQuantityChange(resource.id, parseInt(e.target.value) || 1)}
-                        className="w-20 h-7 text-sm"
-                      />
-                      <span className="text-xs text-muted-foreground">{resource.unit}</span>
+                  return (
+                    <div key={resource.id} className="flex items-start justify-between">
+                      <div className="flex items-start space-x-2">
+                        <Checkbox
+                          id={`resource-${resource.id}`}
+                          checked={isSelected}
+                          onCheckedChange={(checked) => 
+                            handleResourceSelection(resource, checked as boolean)
+                          }
+                        />
+                        <div>
+                          <label
+                            htmlFor={`resource-${resource.id}`}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                          >
+                            {resource.name}
+                          </label>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Available: {resource.available} {resource.unit}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {isSelected && (
+                        <div className="flex items-center space-x-2">
+                          <label className="text-xs" htmlFor={`quantity-${resource.id}`}>Quantity:</label>
+                          <Input
+                            id={`quantity-${resource.id}`}
+                            type="number"
+                            min={1}
+                            max={resource.available}
+                            value={selectedResource?.quantity || 1}
+                            onChange={(e) => handleQuantityChange(resource.id, parseInt(e.target.value) || 1)}
+                            className="w-16 h-8 text-sm"
+                          />
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              ))}
-              
-              {resources.length === 0 && (
-                <p className="text-sm text-muted-foreground">No resources available</p>
+                  );
+                })
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-4">No resources available</p>
               )}
             </div>
           </div>
           
-          <Button onClick={handleCreateWorkOrder} className="mt-2">Create Work Order</Button>
+          <Button onClick={handleSubmit} disabled={isSubmitting}>
+            {isSubmitting ? "Creating..." : "Create Work Order"}
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

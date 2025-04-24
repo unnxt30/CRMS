@@ -10,110 +10,119 @@ import { format } from "date-fns";
 import { Clock, Filter } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { RequestStatus } from "@/types";
 
 export default function RepairHistory() {
   const { userRequests } = useRepairRequests();
+  const [filter, setFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("");
   
-  // Sort requests by submission date (newest first)
-  const sortedRequests = [...userRequests].sort(
-    (a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()
-  );
-  
-  // Filter requests based on search query and status filter
-  const filteredRequests = sortedRequests.filter((request) => {
-    const matchesSearch =
-      searchQuery === "" ||
+  const filteredRequests = userRequests
+    .filter(request => {
+      if (filter === "all") return true;
+      if (filter === "completed") return request.status === RequestStatus.COMPLETED;
+      if (filter === "in-progress") return request.status === RequestStatus.IN_PROGRESS;
+      if (filter === "pending") return request.status === RequestStatus.PENDING;
+      return true;
+    })
+    .filter(request => 
       request.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      request.location.toLowerCase().includes(searchQuery.toLowerCase());
+      request.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      request.description?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
     
-    const matchesStatus = statusFilter === "" || request.status === statusFilter;
-    
-    return matchesSearch && matchesStatus;
-  });
-
   return (
-    <DashboardLayout sidebarLinks={[]} title="Request History">
-      <h1 className="text-2xl font-bold mb-6">Your Repair Request History</h1>
+    <DashboardLayout title="Your Repair History" description="View the status and history of your repair requests">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold">Your Repair History</h1>
+        <p className="text-muted-foreground">View the status and history of all your repair requests</p>
+      </div>
       
       <Card>
-        <CardHeader>
-          <CardTitle className="flex justify-between items-center">
-            <span>Past Requests</span>
-            <div className="flex gap-2 text-sm">
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="All statuses" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="inspected">Inspected</SelectItem>
-                  <SelectItem value="scheduled">Scheduled</SelectItem>
-                  <SelectItem value="in_progress">In Progress</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                  <SelectItem value="rejected">Rejected</SelectItem>
-                </SelectContent>
-              </Select>
-              <div className="relative">
-                <Input
-                  placeholder="Search requests..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-8"
-                />
-                <Filter className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              </div>
-            </div>
-          </CardTitle>
+        <CardHeader className="pb-3">
+          <CardTitle>Your Repair Requests</CardTitle>
         </CardHeader>
         <CardContent>
-          {filteredRequests.length === 0 ? (
-            <div className="text-center py-8">
-              <Clock className="mx-auto h-12 w-12 text-gray-400 mb-2" />
-              <h3 className="font-medium text-lg">No request history found</h3>
-              <p className="text-gray-500">
-                {statusFilter || searchQuery 
-                  ? "Try changing your search or filter criteria" 
-                  : "You haven't submitted any repair requests yet"}
-              </p>
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-4">
+            <div className="relative w-full md:w-96">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+              <Input
+                type="search"
+                placeholder="Search requests..."
+                className="pl-8"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
-          ) : (
+            
+            <div className="flex items-center gap-2">
+              <Filter className="h-4 w-4 text-gray-500" />
+              <span className="text-sm">Filter:</span>
+              <Select value={filter} onValueChange={setFilter}>
+                <SelectTrigger className="w-32 md:w-40">
+                  <SelectValue placeholder="Select filter" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Requests</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="in-progress">In Progress</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          
+          {filteredRequests.length > 0 ? (
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Date Submitted</TableHead>
-                    <TableHead>Request</TableHead>
+                    <TableHead>Title</TableHead>
                     <TableHead>Location</TableHead>
+                    <TableHead>Submitted Date</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Completion Date</TableHead>
-                    <TableHead className="text-right">Action</TableHead>
+                    <TableHead>Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredRequests.map((request) => (
                     <TableRow key={request.id}>
-                      <TableCell>{format(new Date(request.submittedAt), "MMM d, yyyy")}</TableCell>
                       <TableCell className="font-medium">{request.title}</TableCell>
-                      <TableCell className="max-w-[200px] truncate">
-                        {request.location}
-                      </TableCell>
+                      <TableCell>{request.location}</TableCell>
+                      <TableCell>{format(new Date(request.submittedAt), "MMM d, yyyy")}</TableCell>
+                      <TableCell><StatusBadge status={request.status} /></TableCell>
                       <TableCell>
-                        <StatusBadge status={request.status} />
-                      </TableCell>
-                      <TableCell>
-                        {request.status === "completed" && request.estimatedCompletionDate 
-                          ? format(new Date(request.estimatedCompletionDate), "MMM d, yyyy")
-                          : "-"}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <DownloadReportButton request={request} />
+                        <div className="flex items-center gap-2">
+                          <Button asChild variant="ghost" size="sm">
+                            <Link to={`/requests/${request.id}`}>
+                              <Eye className="mr-1 h-4 w-4" /> View
+                            </Link>
+                          </Button>
+                          
+                          {request.status === RequestStatus.COMPLETED && (
+                            <DownloadReportButton request={request} />
+                          )}
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <History className="mx-auto h-12 w-12 text-gray-300" />
+              <h3 className="mt-4 text-lg font-medium">No repair requests found</h3>
+              <p className="mt-2 text-muted-foreground">
+                {searchQuery || filter !== "all" 
+                  ? "Try changing your search or filter settings"
+                  : "You haven't submitted any repair requests yet"}
+              </p>
+              <Button asChild className="mt-4">
+                <Link to="/requests/new">
+                  <Plus className="mr-2 h-4 w-4" /> Submit New Request
+                </Link>
+              </Button>
             </div>
           )}
         </CardContent>
@@ -121,3 +130,8 @@ export default function RepairHistory() {
     </DashboardLayout>
   );
 }
+
+// Missing imports
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { Eye, History, Plus, Search } from "lucide-react";
