@@ -5,10 +5,10 @@ export default function AboutPage() {
   return (
     <Layout>
       <div className="container mx-auto px-4 py-16">
-        <h1 className="text-4xl font-bold mb-8">About City Road Rescue Hub</h1>
+        <h1 className="text-4xl font-bold mb-8">About City Road Management Service</h1>
         <div className="prose prose-lg max-w-none">
           <p className="text-lg mb-6">
-            The City Road Rescue Hub is dedicated to maintaining and improving our city's infrastructure through efficient road maintenance and repair services.
+            The City Road Management Service is dedicated to maintaining and improving our city's infrastructure through efficient road maintenance and repair services.
           </p>
           <div className="grid md:grid-cols-2 gap-8 mt-12">
             <div className="p-6 bg-card rounded-lg shadow-sm">

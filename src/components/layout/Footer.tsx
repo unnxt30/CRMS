@@ -10,7 +10,7 @@ export function Footer() {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <h3 className="text-xl font-bold mb-4">City Road Rescue Hub</h3>
+            <h3 className="text-xl font-bold mb-4">City Road Management Service</h3>
             <p className="text-gray-400">
               Making your city safer, one road at a time. Report issues, track repairs, and see your city improve.
             </p>
@@ -65,7 +65,7 @@ export function Footer() {
         </div>
         
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-          <p>© {year} City Road Rescue Hub. All rights reserved.</p>
+          <p>© {year} City Road Management Service. All rights reserved.</p>
           <div className="mt-2 flex justify-center space-x-4">
             <Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
             <Link to="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
